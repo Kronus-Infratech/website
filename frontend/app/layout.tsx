@@ -63,6 +63,7 @@ export default function RootLayout({
         <meta property="og:title" content="Kronus Infratech & Consultants/" />
         <meta property="og:description" content="An address that outlives time — crafted for legacy in Sonipat." />
         <meta property="og:image" content="https://kronusinfra.org/og-image.png" />
+        <meta property="og:logo" content="https://kronusinfra.org/logo.png" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="twitter:domain" content="kronusinfra.org" />
