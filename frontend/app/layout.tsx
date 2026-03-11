@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     description: "An address that outlives time — crafted for legacy in Sonipat.",
     type: "website",
     locale: "en_IN",
-    url: "https://kronusinfra.org",
+    url: "https://kronusinfra.com",
     images: [
       {
-        url: "https://kronusinfra.org/og-image.png",
+        url: "https://kronusinfra.com/og-image.png",
         width: 1200,
         height: 630,
         alt: "Kronus Infratech luxury residence exterior showcasing modern architecture in Sonipat",
@@ -56,19 +56,21 @@ export default function RootLayout({
         <title>Kronus Infratech & Consultants</title>
         <meta name="description" content="An address that outlives time — crafted for legacy in Sonipat." />
 
-        <meta property="og:url" content="https://www.kronusinfra.org/" />
+        <meta property="og:url" content="https://www.kronusinfra.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Kronus Infratech & Consultants/" />
         <meta property="og:description" content="An address that outlives time — crafted for legacy in Sonipat." />
-        <meta property="og:image" content="https://kronusinfra.org/og-image.png" />
-        <meta property="og:logo" content="https://kronusinfra.org/logo.png" />
-
+        <meta property="og:image" content="https://kronusinfra.com/og-image.png" />
+        <meta property="og:logo" content="https://kronusinfra.com/logo.png" />
+        
+        <meta name="apple-mobile-web-app-title" content="Kronus" />
+      
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="kronusinfra.org" />
-        <meta property="twitter:url" content="https://www.kronusinfra.org/" />
+        <meta property="twitter:domain" content="kronusinfra.com" />
+        <meta property="twitter:url" content="https://www.kronusinfra.com/" />
         <meta name="twitter:title" content="Kronus Infratech & Consultants" />
         <meta name="twitter:description" content="An address that outlives time — crafted for legacy in Sonipat." />
-        <meta name="twitter:image" content="https://kronusinfra.org/og-image.png" />
+        <meta name="twitter:image" content="https://kronusinfra.com/og-image.png" />
 
       </head>
       <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>

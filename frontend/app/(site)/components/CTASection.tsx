@@ -67,11 +67,11 @@ export default function CTASection() {
                                 </span>
                                 <span className="text-sm font-medium">+91 98765 43210</span>
                             </Link>
-                            <Link href="mailto:admin@kronusinfra.org" className="flex items-center gap-3 group text-dark-gray hover:text-teal transition-colors">
+                            <Link href="mailto:admin@kronusinfra.com" className="flex items-center gap-3 group text-dark-gray hover:text-teal transition-colors">
                                 <span className="w-10 h-10 rounded-lg bg-warm-bg flex items-center justify-center text-teal group-hover:bg-teal group-hover:text-white transition-colors">
                                     <Mail className="w-4 h-4" />
                                 </span>
-                                <span className="text-sm font-medium">admin@kronusinfra.org</span>
+                                <span className="text-sm font-medium">admin@kronusinfra.com</span>
                             </Link>
                             <div className="flex items-center gap-3 text-dark-gray">
                                 <span className="w-10 h-10 rounded-lg bg-warm-bg flex items-center justify-center text-teal">

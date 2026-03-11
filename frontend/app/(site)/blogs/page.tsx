@@ -25,10 +25,10 @@ export const metadata: Metadata = {
             "Market trends, buyer guides, construction deep-dives, and honest advice from builders who've been at it since 2014.",
         type: "website",
         locale: "en_IN",
-        url: "https://kronusinfra.org/blogs",
+        url: "https://kronusinfra.com/blogs",
     },
     alternates: {
-        canonical: "https://kronusinfra.org/blogs",
+        canonical: "https://kronusinfra.com/blogs",
     },
 };
 
@@ -39,14 +39,14 @@ function BlogListJsonLd({ posts }: { posts: BlogPost[] }) {
         name: "The Kronus Journal",
         description:
             "Expert real estate insights, buyer guides, and market analysis from Kronus Infratech & Consultants, Sonipat.",
-        url: "https://kronusinfra.org/blogs",
+        url: "https://kronusinfra.com/blogs",
         publisher: {
             "@type": "Organization",
             name: "Kronus Infratech & Consultants",
-            url: "https://kronusinfra.org",
+            url: "https://kronusinfra.com",
             logo: {
                 "@type": "ImageObject",
-                url: "https://kronusinfra.org/logo.png",
+                url: "https://kronusinfra.com/logo.png",
             },
         },
         blogPost: posts.map((post) => ({
@@ -59,7 +59,7 @@ function BlogListJsonLd({ posts }: { posts: BlogPost[] }) {
                 name: post.author.name,
                 jobTitle: post.author.role,
             },
-            url: `https://kronusinfra.org/blogs/${post.slug}`,
+            url: `https://kronusinfra.com/blogs/${post.slug}`,
             image: post.image,
             keywords: post.tags.join(", "),
         })),

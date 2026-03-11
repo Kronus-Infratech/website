@@ -44,8 +44,8 @@ const CONTACT_METHODS = [
     {
         Icon: Mail,
         label: "Email Us",
-        value: "admin@kronusinfra.org",
-        href: "mailto:admin@kronusinfra.org",
+        value: "admin@kronusinfra.com",
+        href: "mailto:admin@kronusinfra.com",
         desc: "We reply within 4 hours",
         color: "bg-sunshade",
     },

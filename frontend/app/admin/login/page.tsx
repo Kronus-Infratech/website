@@ -135,7 +135,7 @@ export default function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-teal/50 focus:border-teal outline-none transition bg-white"
-                  placeholder="admin@kronusinfra.org"
+                  placeholder="admin@kronusinfra.com"
                 />
               </div>
             </div>

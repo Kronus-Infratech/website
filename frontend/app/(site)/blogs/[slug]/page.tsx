@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: post.excerpt,
             type: "article",
             locale: "en_IN",
-            url: `https://kronusinfra.org/blogs/${post.slug}`,
+            url: `https://kronusinfra.com/blogs/${post.slug}`,
             publishedTime: post.date,
             authors: [post.author.name],
             section: post.category,
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [post.image],
         },
         alternates: {
-            canonical: `https://kronusinfra.org/blogs/${post.slug}`,
+            canonical: `https://kronusinfra.com/blogs/${post.slug}`,
         },
     };
 }
@@ -80,15 +80,15 @@ function ArticleJsonLd({ post }: { post: BlogPost }) {
         publisher: {
             "@type": "Organization",
             name: "Kronus Infratech & Consultants",
-            url: "https://kronusinfra.org",
+            url: "https://kronusinfra.com",
             logo: {
                 "@type": "ImageObject",
-                url: "https://kronusinfra.org/logo.png",
+                url: "https://kronusinfra.com/logo.png",
             },
         },
         mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://kronusinfra.org/blogs/${post.slug}`,
+            "@id": `https://kronusinfra.com/blogs/${post.slug}`,
         },
         wordCount,
         articleSection: post.category,
@@ -113,19 +113,19 @@ function BreadcrumbJsonLd({ post }: { post: BlogPost }) {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://kronusinfra.org",
+                item: "https://kronusinfra.com",
             },
             {
                 "@type": "ListItem",
                 position: 2,
                 name: "Blog",
-                item: "https://kronusinfra.org/blogs",
+                item: "https://kronusinfra.com/blogs",
             },
             {
                 "@type": "ListItem",
                 position: 3,
                 name: post.title,
-                item: `https://kronusinfra.org/blogs/${post.slug}`,
+                item: `https://kronusinfra.com/blogs/${post.slug}`,
             },
         ],
     };
