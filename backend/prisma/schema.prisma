@@ -1,0 +1,483 @@
+// Kronus Website Backend — Prisma Schema
+// Shares the same MongoDB database as the CRM.
+// CRM models are mapped to existing collections (read/write).
+// Website-specific models use new collections (prefixed with website_).
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ENUMS — shared with CRM (must stay in sync with crm.schema.prisma)
+// ═══════════════════════════════════════════════════════════════════
+
+enum Role {
+  ADMIN
+  EXECUTIVE
+  DIRECTOR
+  MANAGER
+  SALESMAN
+  FINANCE
+  HR
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  INSTAGRAM
+  YOUTUBE
+  EMAIL
+  WHATSAPP
+  NINETY_NINE_ACRES
+  MAGICBRICKS
+  OLX
+  COLD_OUTREACH
+  WALK_IN
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  NOT_INTERESTED
+  SITE_VISIT
+  NEGOTIATION
+  DOCUMENTATION
+  CONVERTED
+  NOT_CONVERTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  TASK
+  FOLLOW_UP
+}
+
+enum FinanceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LedgerStatus {
+  IDLE
+  ACTIVE
+  CLOSED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  BLOCKED
+  SOLD
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+  INSTITUTIONAL
+  AGRICULTURAL
+  OTHER
+}
+
+enum PropertyTransactionType {
+  SALE
+  RENT
+  LEASE
+}
+
+enum PropertyCondition {
+  NEW
+  RESALE
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CRM MODELS — mapped to existing CRM collections
+// Only fields this backend needs are included.
+// ═══════════════════════════════════════════════════════════════════
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String   @unique
+  password       String
+  name           String
+  phone          String?
+  roles          Role[]   @default([SALESMAN])
+  isActive       Boolean  @default(true)
+  lastLoginAt    DateTime?
+  profileImage   String?
+  department     String?
+  designation    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  createdLeads  Lead[]     @relation("LeadCreator")
+  assignedLeads Lead[]     @relation("LeadAssignee")
+  activities    Activity[]
+
+  @@map("users")
+}
+
+model Lead {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String?
+  phone           String
+  property        String
+  source          LeadSource @default(WEBSITE)
+  status          LeadStatus @default(NEW)
+  priority        Priority   @default(MEDIUM)
+  budgetFrom      Float?
+  budgetTo        Float?
+  followUpDate    DateTime?
+  dob             DateTime?
+  anniversaryDate DateTime?
+
+  createdById  String @db.ObjectId
+  createdBy    User   @relation("LeadCreator", fields: [createdById], references: [id])
+  assignedToId String? @db.ObjectId
+  assignedTo   User?   @relation("LeadAssignee", fields: [assignedToId], references: [id])
+
+  activities Activity[]
+
+  inventoryItemId String?        @db.ObjectId
+  inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+
+  financeStatus FinanceStatus @default(PENDING)
+  financeNotes  String?
+
+  ledgerStatus       LedgerStatus @default(IDLE)
+  paymentTimeline    String?
+  totalAmountToCredit Float?     @default(0.0)
+
+  feedbackToken     String?
+  feedbackSubmitted Boolean @default(false)
+  feedbackRating    Int?
+  feedbackComment   String?
+
+  notesEmbedding Float[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("leads")
+}
+
+model Activity {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        ActivityType
+  title       String
+  description String?
+  date        DateTime     @default(now())
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  leadId String? @db.ObjectId
+  lead   Lead?   @relation(fields: [leadId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("activities")
+}
+
+model City {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  name     String    @unique
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cities")
+}
+
+model Project {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
+  location    String?
+  description String?
+
+  cityId String? @db.ObjectId
+  city   City?   @relation(fields: [cityId], references: [id])
+
+  inventory InventoryItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model InventoryItem {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  plotNumber    String
+  size          String?
+  ratePerSqYard Float?
+  totalPrice    Float?
+  facing        String?
+  roadWidth     String?
+
+  transactionType PropertyTransactionType @default(SALE)
+  propertyType    PropertyType            @default(RESIDENTIAL)
+  openSides       Int?                    @default(1)
+  construction    Boolean?                @default(false)
+  boundaryWalls   Boolean?                @default(false)
+  gatedColony     Boolean?                @default(false)
+  corner          Boolean?                @default(false)
+  condition       PropertyCondition       @default(NEW)
+
+  paymentTime      String?
+  paymentCondition String?
+  circleRate       Float?
+
+  status     InventoryStatus @default(AVAILABLE)
+  ownerName  String?
+  ownerContact String?
+  block      String?
+
+  askingPrice Float?
+
+  reference         String?
+  amenities         String?
+  maintenanceCharges Float?
+  clubCharges       Float?
+  cannesCharges     Float?
+  description       String?
+
+  soldTo   String?
+  soldDate DateTime?
+
+  images String[] @default([])
+
+  descriptionEmbedding Float[] @default([])
+
+  projectId String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id])
+
+  leads Lead[]
+
+  listingDate DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("inventory_items")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// WEBSITE-SPECIFIC MODELS — new collections
+// ═══════════════════════════════════════════════════════════════════
+
+// ─── Website Users (public homebuyers) ───
+
+model WebsiteUser {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  email           String?  @unique
+  phone           String?  @unique
+  name            String?
+  passwordHash    String?
+  googleId        String?  @unique
+  avatar          String?
+  roles           Role[]   @default([])
+  isEmailVerified Boolean  @default(false)
+  isPhoneVerified Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+  bookmarks     Bookmark[]
+  siteVisits    SiteVisitRequest[]
+  documents     WebsiteUserDocument[]
+
+  @@map("website_users")
+}
+
+// ─── Auth tokens ───
+
+enum OtpType {
+  PHONE_LOGIN
+  EMAIL_LOGIN
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+model OtpToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  type       OtpType
+  code       String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@map("otp_tokens")
+}
+
+model RefreshToken {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  token     String
+  userId    String      @db.ObjectId
+  user      WebsiteUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime    @default(now())
+
+  @@map("refresh_tokens")
+}
+
+// ─── Blog Posts ───
+
+model BlogPost {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug            String   @unique
+  title           String
+  excerpt         String
+  category        String
+  tags            String[]
+  authorName      String
+  authorRole      String
+  authorAvatar    String?
+  date            DateTime
+  readingTime     Int
+  image           String
+  featured        Boolean  @default(false)
+  published       Boolean  @default(true)
+  sections        Json
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("blog_posts")
+}
+
+// ─── Website Projects (public showcase properties) ───
+
+model WebsiteProject {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug         String   @unique
+  title        String
+  type         String   // Residential, Commercial, Villa, Plot, Penthouse
+  status       String   // Ready to Move, Under Construction, Upcoming
+  price        String   // Display: "₹1.2 Cr"
+  priceNumeric Float
+  area         String   // Display: "1,850 sq.ft"
+  areaNumeric  Float
+  bedrooms     Int      @default(0)
+  bathrooms    Int      @default(0)
+  location     String
+  locality     String
+  image        String
+  images       String[] @default([])
+  featured     Boolean  @default(false)
+  amenities    String[] @default([])
+  description  String
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("website_projects")
+}
+
+// ─── Bookmarks ───
+
+model Bookmark {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String      @db.ObjectId
+  user            WebsiteUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inventoryItemId String      @db.ObjectId
+  createdAt       DateTime    @default(now())
+
+  @@unique([userId, inventoryItemId])
+  @@map("bookmarks")
+}
+
+// ─── Site Visit Requests ───
+
+enum SiteVisitStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model SiteVisitRequest {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String?         @db.ObjectId
+  user            WebsiteUser?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name            String
+  phone           String
+  email           String?
+  inventoryItemId String?         @db.ObjectId
+  projectId       String?         @db.ObjectId
+  preferredDate   DateTime
+  preferredTime   String?
+  status          SiteVisitStatus @default(PENDING)
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("site_visit_requests")
+}
+
+// ─── Newsletter ───
+
+model NewsletterSubscriber {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  email          String    @unique
+  isActive       Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@map("newsletter_subscribers")
+}
+
+// ─── Website User Documents (KYC) ───
+
+enum DocumentType {
+  AADHAAR
+  PAN
+  PASSPORT
+  OTHER
+}
+
+model WebsiteUserDocument {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String       @db.ObjectId
+  user       WebsiteUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  type       DocumentType @default(OTHER)
+  fileUrl    String
+  fileSize   Int?
+  uploadedAt DateTime     @default(now())
+
+  @@map("website_user_documents")
+}

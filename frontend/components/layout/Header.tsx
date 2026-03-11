@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMediaQuery } from "usehooks-ts"
 
 const NAV_LINKS = [
     { label: "Home", href: "/" },
@@ -18,7 +17,6 @@ const NAV_LINKS = [
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 60);
@@ -38,14 +36,33 @@ export default function Header() {
                     }`}
             >
                 <nav aria-label="Main navigation" className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
-                    {/* Logo */}
+                    {/* Logo — white version on desktop (unscrolled), dark version otherwise */}
                     <Link href="/" aria-label="Kronus Infratech — Home">
+                        {/* Mobile: always dark logo */}
                         <Image
-                            src={isDesktop ? (scrolled ? "/logo.png" : "/logo_white.png") : "/logo.png"}
+                            src="/logo.png"
                             alt="Kronus Infratech logo"
                             width={150}
                             height={40}
                             priority
+                            className="block md:hidden"
+                        />
+                        {/* Desktop: white when not scrolled, dark when scrolled */}
+                        <Image
+                            src="/logo_white.png"
+                            alt="Kronus Infratech logo"
+                            width={150}
+                            height={40}
+                            priority
+                            className={`hidden md:block transition-opacity duration-300 ${scrolled ? "opacity-0 absolute" : "opacity-100"}`}
+                        />
+                        <Image
+                            src="/logo.png"
+                            alt="Kronus Infratech logo"
+                            width={150}
+                            height={40}
+                            priority
+                            className={`hidden md:block transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0 absolute"}`}
                         />
                     </Link>
 

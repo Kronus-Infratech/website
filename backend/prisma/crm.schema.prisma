@@ -1,0 +1,514 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  email             String   @unique
+  password          String
+  name              String
+  phone             String?
+  roles             Role[]   @default([SALESMAN])
+  isActive          Boolean  @default(true)
+  lastLoginAt       DateTime?
+  lastAssignedAt    DateTime?
+  profileImage      String?
+  department        String?
+  designation       String?
+  resetPasswordToken String?
+  resetPasswordExpire DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  createdLeads      Lead[]   @relation("LeadCreator")
+  assignedLeads     Lead[]   @relation("LeadAssignee")
+  activities        Activity[]
+  transactions      Transaction[]
+  events            Event[]   @relation("UserEvents")
+  leaves            Leave[]   @relation("UserLeaves")
+  approvedLeaves    Leave[]   @relation("ApprovedLeaves")
+  
+  // Ledger Relations
+  paymentLedgerEntries  PaymentLedgerEntry[]
+  uploadedPayments      PaymentLedgerEntry[] @relation("PaymentUploader")
+  uploadedDocuments     DocumentLedgerEntry[] @relation("DocumentUploader")
+  
+  // Inventory Relations
+  createdInventory      InventoryItem[] @relation("InventoryCreator")
+  
+  @@map("users")
+}
+
+model Lead {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String?
+  phone           String
+  property        String
+  source          LeadSource  @default(WEBSITE)
+  status          LeadStatus  @default(NEW)
+  priority        Priority    @default(MEDIUM)
+  budgetFrom      Float?
+  budgetTo        Float?
+  followUpDate    DateTime?
+  dob             DateTime?
+  anniversaryDate DateTime?
+  
+  // Relations
+  createdById     String      @db.ObjectId
+  createdBy       User        @relation("LeadCreator", fields: [createdById], references: [id])
+  assignedToId    String?     @db.ObjectId
+  assignedTo      User?       @relation("LeadAssignee", fields: [assignedToId], references: [id])
+  activities      Activity[]
+  documents       Document[]
+  events          Event[]     @relation("LeadEvents")
+  
+  // Linking to Inventory
+  inventoryItemId String?     @db.ObjectId
+  inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Feedback fields
+  feedbackToken      String?
+  feedbackSubmitted  Boolean     @default(false)
+  feedbackRating     Int?
+  feedbackComment    String?
+
+  // Finance Fields
+  financeStatus      FinanceStatus @default(PENDING)
+  financeNotes       String?
+  
+  // Running Ledger Fields
+  ledgerStatus       LedgerStatus @default(IDLE)
+  paymentTimeline    String?
+  totalAmountToCredit Float?     @default(0.0)
+  
+  // Ledger Closure Tracking
+  paymentLedgerClosedBySalesId    String? @db.ObjectId
+  paymentLedgerClosedByFinanceId  String? @db.ObjectId
+  paymentLedgerClosedAt           DateTime?
+  paymentLedgerClosureNotes       String?
+  
+  documentLedgerClosedBySalesId   String? @db.ObjectId
+  documentLedgerClosedByFinanceId String? @db.ObjectId
+  documentLedgerClosedAt          DateTime?
+  documentLedgerClosureNotes      String?
+
+  paymentLedgerEntries  PaymentLedgerEntry[]
+  documentLedgerEntries DocumentLedgerEntry[]
+  
+  // AI Embeddings
+  notesEmbedding Float[]  @default([])
+  
+  @@map("leads")
+}
+
+model Activity {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        ActivityType
+  title       String
+  description String?
+  date        DateTime     @default(now())
+  
+  // Relations
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  leadId      String?      @db.ObjectId
+  lead        Lead?        @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@map("activities")
+}
+
+enum Role {
+  ADMIN
+  EXECUTIVE
+  DIRECTOR
+  MANAGER
+  SALESMAN
+  FINANCE
+  HR
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  INSTAGRAM
+  YOUTUBE
+  EMAIL
+  WHATSAPP
+  NINETY_NINE_ACRES
+  MAGICBRICKS
+  OLX
+  COLD_OUTREACH
+  WALK_IN
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  NOT_INTERESTED
+  SITE_VISIT
+  NEGOTIATION
+  DOCUMENTATION
+  CONVERTED
+  NOT_CONVERTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  TASK
+  FOLLOW_UP
+}
+
+model SystemLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  level     String   // "ERROR", "WARN", "INFO"
+  message   String
+  stack     String?
+  path      String?
+  method    String?
+  userId    String?
+  timestamp DateTime @default(now())
+  
+  @@map("system_logs")
+}
+
+model Document {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  url       String
+  type      String   // "PDF", "IMAGE"
+  size      Int?     // in bytes
+  
+  leadId    String   @db.ObjectId
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("documents")
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  type        TransactionType
+  amount      Float
+  date        DateTime @default(now())
+  source      String
+  description String?
+  
+  // Relations
+  handledById String   @db.ObjectId
+  handledBy   User     @relation(fields: [handledById], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum FinanceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LedgerStatus {
+  IDLE
+  ACTIVE
+  CLOSED
+}
+
+model PaymentLedgerEntry {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  amount          Float?
+  note            String
+  attachmentUrl   String?
+  attachmentType  String?        // "IMAGE", "PDF"
+  
+  status          VerificationStatus @default(PENDING)
+  verifiedById    String?        @db.ObjectId
+  verifiedBy      User?          @relation(fields: [verifiedById], references: [id])
+  verifiedAt      DateTime?
+  financeNotes    String?
+
+  leadId          String         @db.ObjectId
+  lead            Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  uploaderId      String         @db.ObjectId
+  uploader        User           @relation("PaymentUploader", fields: [uploaderId], references: [id])
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@map("payment_ledger_entries")
+}
+
+model DocumentLedgerEntry {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  note            String
+  attachmentUrl   String
+  attachmentType  String         // "IMAGE", "PDF"
+  
+  status          VerificationStatus @default(PENDING)
+  // Two-step approval
+  salesApproved   Boolean        @default(false)
+  salesApprovedBy String?        @db.ObjectId
+  salesApprovedAt DateTime?
+  
+  financeApproved Boolean        @default(false)
+  financeApprovedBy String?      @db.ObjectId
+  financeApprovedAt DateTime?
+  
+  salesNotes      String?
+  financeNotes    String?
+
+  leadId          String         @db.ObjectId
+  lead            Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  uploaderId      String         @db.ObjectId
+  uploader        User           @relation("DocumentUploader", fields: [uploaderId], references: [id])
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@map("document_ledger_entries")
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model City {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  projects    Project[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("cities")
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  location    String?
+  description String?
+  descriptionEmbedding Float[] @default([])
+  
+  cityId      String?  @db.ObjectId
+  city        City?    @relation(fields: [cityId], references: [id])
+  
+  inventory   InventoryItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("projects")
+}
+
+model InventoryItem {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Basic Details
+  plotNumber        String
+  size              String?  // e.g. "200 sqyd"
+  ratePerSqYard     Float?
+  totalPrice        Float?
+  facing            String?
+  roadWidth         String?
+  
+  // New Features
+  transactionType   PropertyTransactionType @default(SALE)
+  propertyType      PropertyType           @default(RESIDENTIAL)
+  openSides         Int?                   @default(1)
+  construction      Boolean?               @default(false)
+  boundaryWalls     Boolean?               @default(false)
+  gatedColony       Boolean?               @default(false)
+  corner            Boolean?               @default(false)
+  condition         PropertyCondition      @default(NEW)
+
+  // Payment Details
+  paymentTime       String?
+  paymentCondition  String?
+  circleRate        Float?
+  
+  // Status & Ownership
+  status            InventoryStatus @default(AVAILABLE)
+  ownerName         String?
+  ownerContact      String?
+  block             String?
+  
+  // Financials
+  askingPrice       Float?
+  
+  // Extra Details
+  reference         String?
+  amenities         String?
+  maintenanceCharges Float?
+  clubCharges       Float?
+  cannesCharges     Float? 
+  description       String? 
+  
+  // Sold Details
+  soldTo            String?
+  soldDate          DateTime?
+  
+  // Media
+  images            String[]   @default([])
+
+  // AI Embeddings
+  descriptionEmbedding Float[]  @default([])
+
+  // Tracking
+  createdById       String?     @db.ObjectId
+  createdBy         User?       @relation("InventoryCreator", fields: [createdById], references: [id])
+  
+  // Relations
+  projectId         String   @db.ObjectId
+  project           Project  @relation(fields: [projectId], references: [id])
+  leads             Lead[]
+  
+  listingDate       DateTime @default(now()) 
+  updatedAt         DateTime @updatedAt
+  
+  // Map Property Relation
+  mapProperty       MapProperty?
+  
+  @@map("inventory_items")
+}
+
+model MapProperty {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String?
+  
+  // GeoJSON polygon coordinates stored as JSON array of [lng, lat] pairs
+  coordinates     Json      // [[lng, lat], [lng, lat], ...]
+  center          Json      // [lng, lat] center point for quick map positioning
+  color           String?   @default("#009688")
+  
+  // Link to Inventory
+  inventoryItemId String?  @unique @db.ObjectId
+  inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+  
+  createdById     String   @db.ObjectId
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("map_properties")
+}
+
+enum PropertyTransactionType {
+  SALE
+  RENT
+  LEASE
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+  INSTITUTIONAL
+  AGRICULTURAL
+  OTHER
+}
+
+enum PropertyCondition {
+  NEW
+  RESALE
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  BLOCKED
+  SOLD
+}
+
+model Event {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  start       DateTime
+  end         DateTime
+  allDay      Boolean  @default(false)
+  type        String   @default("EVENT") // "EVENT", "FOLLOW_UP", "MEETING", "SITE_VISIT"
+  
+  // Relations
+  userId      String   @db.ObjectId
+  user        User     @relation("UserEvents", fields: [userId], references: [id])
+  
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation("LeadEvents", fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+}
+
+model Leave {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String      @db.ObjectId
+  user            User        @relation("UserLeaves", fields: [userId], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  type            LeaveType   @default(CASUAL)
+  reason          String
+  status          LeaveStatus @default(PENDING)
+  approvedById    String?     @db.ObjectId
+  approvedBy      User?       @relation("ApprovedLeaves", fields: [approvedById], references: [id])
+  rejectionReason String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("leaves")
+}
+
+enum LeaveType {
+  SICK
+  CASUAL
+  EARNED
+  PATERNITY
+  MATERNITY
+  OTHER
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

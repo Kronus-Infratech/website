@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-clash-display",
@@ -74,9 +72,7 @@ export default function RootLayout({
 
       </head>
       <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
-        <Header />
         {children}
-        <Footer />
       </body>
     </html>
   );
