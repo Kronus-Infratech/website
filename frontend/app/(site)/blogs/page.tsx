@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import BlogsContent from "./components/BlogsContent";
 import { fetchBlogPosts, fetchBlogCategories } from "@/lib/fetchers";
 import type { BlogPost } from "@/lib/types";
+import { JsonLd, breadcrumbLd } from "@/lib/schemas";
 
 export const revalidate = 60;
 
@@ -81,6 +82,12 @@ export default async function BlogsPage() {
 
     return (
         <main>
+            <JsonLd
+                data={breadcrumbLd([
+                    { name: "Home", url: "https://kronusinfra.com" },
+                    { name: "Blog", url: "https://kronusinfra.com/blogs" },
+                ])}
+            />
             <BlogListJsonLd posts={posts} />
             <BlogsContent initialPosts={posts} categories={categories} />
         </main>
