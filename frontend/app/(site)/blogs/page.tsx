@@ -27,6 +27,14 @@ export const metadata: Metadata = {
         type: "website",
         locale: "en_IN",
         url: "https://kronusinfra.com/blogs",
+        images: [
+            {
+                url: "https://kronusinfra.com/og-image.webp",
+                width: 1200,
+                height: 630,
+                alt: "The Kronus Journal — Real Estate Insights & Guides",
+            },
+        ],
     },
     alternates: {
         canonical: "https://kronusinfra.com/blogs",

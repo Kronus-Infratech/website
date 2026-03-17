@@ -293,7 +293,7 @@ function PropertyCard({ property, index, layout }: { property: Property; index: 
     );
 }
 
-function ProjectsGrid({ projects }: { projects: Property[] }) {
+export function ProjectsGrid({ projects }: { projects: Property[] }) {
     const [search, setSearch] = useState("");
     const [selectedType, setSelectedType] = useState<string>("All");
     const [selectedStatus, setSelectedStatus] = useState<string>("All");
@@ -615,11 +615,11 @@ function CtaBanner() {
     );
 }
 
-export default function ProjectsContent({ initialProjects }: { initialProjects: Property[] }) {
+export default function ProjectsContent({ children }: { children: React.ReactNode }) {
     return (
         <main>
             <HeroBanner />
-            <ProjectsGrid projects={initialProjects} />
+            {children}
             <CtaBanner />
         </main>
     );

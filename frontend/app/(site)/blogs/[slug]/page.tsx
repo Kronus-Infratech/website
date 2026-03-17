@@ -6,6 +6,11 @@ import BlogPostContent from "./components/BlogPostContent";
 
 export const revalidate = 60;
 
+export async function generateStaticParams() {
+    const posts = await fetchBlogPosts();
+    return posts.map((p) => ({ slug: p.slug }));
+}
+
 type PageProps = {
     params: Promise<{ slug: string }>;
 };
