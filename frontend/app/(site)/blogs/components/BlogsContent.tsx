@@ -41,7 +41,7 @@ function HeroBanner() {
             <motion.div className="absolute inset-0 will-change-transform" style={{ y: imgY }}>
                 <img
                     // src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80"
-                    src="/blogs-hero.png"
+                    src="/blogs-hero.webp"
                     alt="Kronus Infratech blog — real estate insights and homebuying guides"
                     className="w-full h-[130%] object-cover"
                 />

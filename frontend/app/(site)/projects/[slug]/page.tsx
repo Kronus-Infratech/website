@@ -54,7 +54,7 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const GALLERY_POOL = [
-    "/projects-slug-hero.png",
+    "/projects-slug-hero.webp",
     "/projects/one.jpg",
     "/projects/two.jpg"
     // "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
