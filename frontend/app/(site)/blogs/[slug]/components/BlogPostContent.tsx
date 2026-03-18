@@ -263,8 +263,13 @@ function RelatedPosts({ post, allPosts }: { post: BlogPost; allPosts: BlogPost[]
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.4, delay: i * 0.08 }}
-                            className="group rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-lg hover:shadow-teal/6 transition-shadow duration-500"
+                            className="group relative rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-lg hover:shadow-teal/6 transition-shadow duration-500"
                         >
+                            <Link
+                                href={`/blogs/${p.slug}`}
+                                aria-label={`Read ${p.title}`}
+                                className="absolute inset-0 z-10 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                            />
                             <div className="relative h-48 overflow-hidden">
                                 <img
                                     src={p.image}
@@ -285,18 +290,14 @@ function RelatedPosts({ post, allPosts }: { post: BlogPost; allPosts: BlogPost[]
                                     <span className="text-[11px] text-spanish-gray">{p.readingTime} min</span>
                                 </div>
                                 <h3 className="text-lg font-semibold text-dark-gray mb-2 group-hover:text-teal transition-colors font-heading leading-snug line-clamp-2">
-                                    <Link href={`/blogs/${p.slug}`}>{p.title}</Link>
+                                    {p.title}
                                 </h3>
                                 <p className="text-sm text-dark-gray/60 leading-relaxed line-clamp-2 mb-4">
                                     {p.excerpt}
                                 </p>
-                                <Link
-                                    href={`/blogs/${p.slug}`}
-                                    aria-label={`Read ${p.title}`}
-                                    className="flex items-center gap-1.5 text-sm font-medium text-teal hover:underline underline-offset-4"
-                                >
+                                <span className="flex items-center gap-1.5 text-sm font-medium text-teal">
                                     Read More <ArrowRight className="w-3.5 h-3.5" />
-                                </Link>
+                                </span>
                             </div>
                         </motion.article>
                     ))}

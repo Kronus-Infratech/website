@@ -194,6 +194,11 @@ function PropertyCard({ property, index, layout }: { property: Property; index: 
                 className="group relative rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-lg hover:shadow-teal/6 transition-shadow duration-500"
             >
                 <motion.div className="absolute inset-0 pointer-events-none rounded-lg" style={{ background: spotlight }} />
+                <Link
+                    href={`/projects/${p.slug}`}
+                    aria-label={`View details of ${p.title}`}
+                    className="absolute inset-0 z-10 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                />
                 <div className="relative flex flex-col sm:flex-row">
                     <div className="relative w-full sm:w-72 h-52 sm:h-auto shrink-0 overflow-hidden">
                         <img
@@ -224,13 +229,9 @@ function PropertyCard({ property, index, layout }: { property: Property; index: 
                         </div>
                         <div className="flex items-center justify-between pt-4 border-t border-dark-gray/6">
                             <p className="text-2xl font-bold text-dark-gray">{p.price}</p>
-                            <Link
-                                href={`/projects/${p.slug}`}
-                                aria-label={`View details of ${p.title}`}
-                                className="flex items-center gap-2 text-sm font-medium text-teal hover:underline underline-offset-4"
-                            >
+                            <span className="flex items-center gap-2 text-sm font-medium text-teal">
                                 View Details <ArrowRight className="w-4 h-4" />
-                            </Link>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -249,6 +250,11 @@ function PropertyCard({ property, index, layout }: { property: Property; index: 
             className="group relative rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-lg hover:shadow-teal/6 transition-shadow duration-500"
         >
             <motion.div className="absolute inset-0 pointer-events-none rounded-lg" style={{ background: spotlight }} />
+            <Link
+                href={`/projects/${p.slug}`}
+                aria-label={`View details of ${p.title}`}
+                className="absolute inset-0 z-10 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+            />
             <div className="relative h-56 overflow-hidden">
                 <img
                     src={p.image}
@@ -280,13 +286,9 @@ function PropertyCard({ property, index, layout }: { property: Property; index: 
                 )}
                 <div className="flex items-center justify-between pt-4 border-t border-dark-gray/6">
                     <p className="text-xl font-bold text-dark-gray">{p.price}</p>
-                    <Link
-                        href={`/projects/${p.slug}`}
-                        aria-label={`View details of ${p.title}`}
-                        className="w-9 h-9 rounded-lg bg-warm-bg flex items-center justify-center text-teal hover:bg-teal hover:text-white transition-colors"
-                    >
+                    <span className="w-9 h-9 rounded-lg bg-warm-bg flex items-center justify-center text-teal transition-colors">
                         <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </span>
                 </div>
             </div>
         </motion.article>

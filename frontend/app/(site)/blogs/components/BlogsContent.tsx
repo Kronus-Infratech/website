@@ -108,6 +108,11 @@ function FeaturedPost({ posts }: { posts: BlogPost[] }) {
                     className="group relative rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-xl hover:shadow-teal/6 transition-shadow duration-500"
                 >
                     <motion.div className="absolute inset-0 pointer-events-none rounded-lg" style={{ background: spotlight }} />
+                    <Link
+                        href={`/blogs/${post.slug}`}
+                        aria-label={`Read ${post.title}`}
+                        className="absolute inset-0 z-10 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                    />
                     <div className="relative grid grid-cols-1 lg:grid-cols-2">
                         <div className="relative h-64 lg:h-auto overflow-hidden">
                             <img
@@ -132,7 +137,7 @@ function FeaturedPost({ posts }: { posts: BlogPost[] }) {
                                 </time>
                             </div>
                             <h2 className="text-2xl sm:text-3xl font-bold text-dark-gray mb-3 group-hover:text-teal transition-colors font-heading leading-tight">
-                                <Link href={`/blogs/${post.slug}`}>{post.title}</Link>
+                                {post.title}
                             </h2>
                             <p className="text-sm text-dark-gray/60 leading-relaxed mb-6 line-clamp-3">
                                 {post.excerpt}
@@ -149,13 +154,9 @@ function FeaturedPost({ posts }: { posts: BlogPost[] }) {
                                         <p className="text-[10px] text-spanish-gray">{post.author.role}</p>
                                     </div>
                                 </div>
-                                <Link
-                                    href={`/blogs/${post.slug}`}
-                                    aria-label={`Read ${post.title}`}
-                                    className="flex items-center gap-2 text-sm font-medium text-teal hover:underline underline-offset-4"
-                                >
+                                <span className="flex items-center gap-2 text-sm font-medium text-teal">
                                     Read Article <ArrowRight className="w-4 h-4" />
-                                </Link>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -189,6 +190,11 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
             className="group relative rounded-lg overflow-hidden border border-dark-gray/6 bg-white hover:shadow-lg hover:shadow-teal/6 transition-shadow duration-500"
         >
             <motion.div className="absolute inset-0 pointer-events-none rounded-lg" style={{ background: spotlight }} />
+            <Link
+                href={`/blogs/${post.slug}`}
+                aria-label={`Read ${post.title}`}
+                className="absolute inset-0 z-10 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+            />
             <div className="relative h-52 overflow-hidden">
                 <img
                     src={post.image}
@@ -211,7 +217,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
                     </span>
                 </div>
                 <h3 className="text-lg font-semibold text-dark-gray mb-2 group-hover:text-teal transition-colors font-heading leading-snug line-clamp-2">
-                    <Link href={`/blogs/${post.slug}`}>{post.title}</Link>
+                    {post.title}
                 </h3>
                 <p className="text-sm text-dark-gray/60 leading-relaxed mb-4 line-clamp-2">
                     {post.excerpt}
@@ -226,13 +232,9 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
                         />
                         <p className="text-xs font-medium text-dark-gray">{post.author.name}</p>
                     </div>
-                    <Link
-                        href={`/blogs/${post.slug}`}
-                        aria-label={`Read ${post.title}`}
-                        className="w-8 h-8 rounded-lg bg-warm-bg flex items-center justify-center text-teal hover:bg-teal hover:text-white transition-colors"
-                    >
+                    <span className="w-8 h-8 rounded-lg bg-warm-bg flex items-center justify-center text-teal transition-colors">
                         <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    </span>
                 </div>
             </div>
         </motion.article>
