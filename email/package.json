@@ -1,6 +1,6 @@
 {
   "name": "kronus-email-service",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Email microservice for Kronus platform",
   "type": "module",
   "main": "src/index.ts",

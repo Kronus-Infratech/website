@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import helmet from "helmet";
+import helmetImport from "helmet";
 import dotenv from "dotenv";
 import { sendOtpEmail } from "./services/emailService.js";
 import { z } from "zod";
@@ -9,6 +9,11 @@ dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT;
+
+// Handle helmet interop across environments that resolve ESM/CJS types differently.
+const helmet =
+    (helmetImport as unknown as { default?: () => express.RequestHandler }).default ??
+    (helmetImport as unknown as () => express.RequestHandler);
 
 // Middleware
 app.use(helmet());
