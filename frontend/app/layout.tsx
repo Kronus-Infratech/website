@@ -83,7 +83,7 @@ export default function RootLayout({
 
         <meta property="og:url" content="https://kronusinfra.com/" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Kronus Infratech & Consultants/" />
+        <meta property="og:title" content="Kronus Infratech & Consultants" />
         <meta property="og:description" content="An address that outlives time — crafted for legacy in Sonipat." />
         <meta property="og:image" content="https://kronusinfra.com/og-image.webp" />
         <meta property="og:logo" content="https://kronusinfra.com/logo.png" />

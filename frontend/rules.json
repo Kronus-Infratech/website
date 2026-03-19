@@ -23,32 +23,36 @@
     ],
     "ui_rules": [
         {
-            "id":1,
+            "id": 1,
             "rule": "Instead of using values like border-white/[0.06] or bg-white/[0.03], use values like border-white/6 or bg-white/3 to maintain consistency and readability in the codebase and also to ensure we comply with latest Tailwind CSS syntax."
         },
         {
-            "id":2,
+            "id": 2,
             "rule": "Use descriptive titles for interactive elements like buttons and selects to enhance accessibility. For example, add title attributes such as title='Expand' to buttons that toggle visibility or expand sections, providing clear context for screen readers and improving overall user experience."
         },
         {
-            "id":3,
+            "id": 3,
             "rule": "Instead of using values like min-w-[180px] or h-[300px], use values like min-w-45 or h-75 (their equivalent in Tailwind CSS) to maintain consistency and readability in the codebase and also to ensure we comply with latest Tailwind CSS syntax."
         },
         {
-            "id":4,
+            "id": 4,
             "rule": "SEO is topmost priority. Ensure that all interactive elements and important content are accessible and properly structured for search engines. Use semantic HTML tags, descriptive alt attributes for images, and ensure that the website is easily navigable for both users and search engines."
         },
         {
-            "id":5,
+            "id": 5,
             "rule": "Instead of using values like bg-gradient-to-[xyz], use values like bg-linear-to-[xyz] to maintain consistency and readability in the codebase and also to ensure we comply with latest Tailwind CSS syntax."
         },
         {
-            "id":6,
+            "id": 6,
             "rule": "Design should not look ai generated. It should be artistic, emotional, and human. Avoid using design elements that are commonly associated with AI-generated content, such as gradients, pills, and other overused design trends. Instead, focus on creating a unique and authentic design that resonates with the target audience and reflects the brand's identity."
         },
         {
-            "id":7,
+            "id": 7,
             "rule": "Do not use generic or ai generated common text for the website. All text content should be original, engaging, and tailored to the brand's voice and target audience. Avoid using placeholder text or commonly used phrases that may come across as generic or AI-generated. Instead, focus on crafting compelling and meaningful content that effectively communicates the brand's message and values."
+        },
+        {
+            "id": 8,
+            "rule": "Never leave hard coded alternates to enviorment variables in the codebase. For example, instead of using process.env.EMAIL_SERVICE_URL || 'http://localhost:3001', always use process.env.EMAIL_SERVICE_URL. This practice helps maintain security and consistency across different environments and prevents accidental exposure of sensitive information or unintended behavior due to fallback values."
         }
     ]
 }

@@ -17,6 +17,19 @@ export const registerEmailSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 });
 
+export const registerSellerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().min(10, "Valid phone number required"),
+  companyName: z.string().min(2, "Company name required"),
+  businessType: z.string().min(2, "Business type required"),
+  address: z.string().min(5, "Address required"),
+  city: z.string().min(2, "City required"),
+  state: z.string().min(2, "State required"),
+  pincode: z.string().regex(/^\d{6}$/, "Valid 6-digit pincode required"),
+});
+
 export const loginEmailSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, "Password is required"),

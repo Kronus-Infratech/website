@@ -46,9 +46,22 @@ export async function verifyPhoneLogin(req: Request, res: Response) {
 
 export async function register(req: Request, res: Response) {
   const { email, password, name } = req.body;
-  const result = await authService.registerWithEmail(email, password, name, getMeta(req));
+  const result = await authService.registerWithEmail(email, password, name, "BUYER", getMeta(req));
   setRefreshCookie(res, result.refreshToken, result.refreshExpiresMs);
   return created(res, "Registration successful. Please verify your email.", {
+    accessToken: result.accessToken,
+    user: result.user,
+  });
+}
+
+export async function registerSeller(req: Request, res: Response) {
+  const { email, password, name, phone, companyName, businessType, address, city, state, pincode } = req.body;
+  const result = await authService.registerAsSeller(
+    { email, password, name, phone, companyName, businessType, address, city, state, pincode },
+    getMeta(req),
+  );
+  setRefreshCookie(res, result.refreshToken, result.refreshExpiresMs);
+  return created(res, "Seller registration successful. Awaiting admin approval.", {
     accessToken: result.accessToken,
     user: result.user,
   });

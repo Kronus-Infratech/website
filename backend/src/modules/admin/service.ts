@@ -13,14 +13,14 @@ export async function adminLogin(email: string, password: string) {
   }
 
   // Only users with ADMIN role can log in to admin panel
-  if (!user.roles.includes("ADMIN")) {
+  if (user.userType !== "ADMIN") {
     throw AppError.unauthorized("Invalid credentials");
   }
 
   const valid = await comparePassword(password, user.passwordHash);
   if (!valid) throw AppError.unauthorized("Invalid credentials");
 
-  const token = signAdminToken(user.id, user.roles);
+  const token = signAdminToken(user.id, [user.userType]);
 
   return {
     token,
@@ -28,7 +28,7 @@ export async function adminLogin(email: string, password: string) {
       id: user.id,
       name: user.name ?? user.email ?? "",
       email: user.email ?? "",
-      roles: user.roles,
+      userType: user.userType,
     },
   };
 }

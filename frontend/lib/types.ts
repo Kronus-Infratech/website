@@ -47,3 +47,20 @@ export interface BlogPost {
     featured: boolean;
     sections: BlogSection[];
 }
+
+export interface SellerListingPreview {
+    id: string;
+    title: string;
+    description?: string;
+    price: number;
+    area: number;
+    bedrooms: number;
+    bathrooms: number;
+    images: string[];
+    status: "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | "LIVE" | "DELISTED";
+    approvedAt?: string;
+    rejectionReason?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+

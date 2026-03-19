@@ -104,6 +104,7 @@ export async function registerWithEmail(
   email: string,
   password: string,
   name: string,
+  userType: "BUYER" | "SELLER" = "BUYER",
   meta: { userAgent?: string; ip?: string },
 ) {
   const existing = await prisma.websiteUser.findUnique({ where: { email } });
@@ -111,11 +112,69 @@ export async function registerWithEmail(
 
   const passwordHash = await hashPassword(password);
   const user = await prisma.websiteUser.create({
-    data: { email, passwordHash, name, isEmailVerified: false },
+    data: {
+      email,
+      passwordHash,
+      name,
+      isEmailVerified: false,
+      userType,
+    },
   });
 
   // Send verification OTP
   await sendOtp(email, "EMAIL_VERIFY");
+
+  return issueTokens(user.id, meta);
+}
+
+export async function registerAsSeller(
+  data: {
+    email: string;
+    password: string;
+    name: string;
+    phone: string;
+    companyName: string;
+    businessType: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode: string;
+  },
+  meta: { userAgent?: string; ip?: string },
+) {
+  const existing = await prisma.websiteUser.findUnique({ where: { email: data.email } });
+  if (existing) throw AppError.conflict("Email already registered");
+
+  const passwordHash = await hashPassword(data.password);
+
+  // Create user with SELLER role
+  const user = await prisma.websiteUser.create({
+    data: {
+      email: data.email,
+      passwordHash,
+      name: data.name,
+      phone: data.phone,
+      isEmailVerified: false,
+      userType: "SELLER",
+    },
+  });
+
+  // Create seller profile
+  await prisma.sellerProfile.create({
+    data: {
+      userId: user.id,
+      companyName: data.companyName,
+      businessType: data.businessType,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      pincode: data.pincode,
+      status: "PENDING_APPROVAL",
+    },
+  });
+
+  // Send verification OTP
+  await sendOtp(data.email, "EMAIL_VERIFY");
 
   return issueTokens(user.id, meta);
 }
@@ -248,7 +307,16 @@ async function issueTokens(userId: string, meta: { userAgent?: string; ip?: stri
 
   const user = await prisma.websiteUser.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, phone: true, name: true, avatar: true, isEmailVerified: true, isPhoneVerified: true },
+    select: {
+      id: true,
+      email: true,
+      phone: true,
+      name: true,
+      avatar: true,
+      userType: true,
+      isEmailVerified: true,
+      isPhoneVerified: true
+    },
   });
 
   return { accessToken, refreshToken, refreshExpiresMs, user };

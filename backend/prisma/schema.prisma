@@ -294,7 +294,30 @@ model InventoryItem {
 // WEBSITE-SPECIFIC MODELS — new collections
 // ═══════════════════════════════════════════════════════════════════
 
-// ─── Website Users (public homebuyers) ───
+// ─── Website User Role (for buyers and sellers) ───
+
+enum WebsiteUserRole {
+  ADMIN
+  BUYER
+  SELLER
+}
+
+enum SellerStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum SellerListingStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  LIVE
+  DELISTED
+}
+
+// ─── Website Users (public homebuyers and sellers) ───
 
 model WebsiteUser {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -304,7 +327,7 @@ model WebsiteUser {
   passwordHash    String?
   googleId        String?  @unique
   avatar          String?
-  roles           Role[]   @default([])
+  userType        WebsiteUserRole @default(BUYER)
   isEmailVerified Boolean  @default(false)
   isPhoneVerified Boolean  @default(false)
   isActive        Boolean  @default(true)
@@ -315,8 +338,88 @@ model WebsiteUser {
   bookmarks     Bookmark[]
   siteVisits    SiteVisitRequest[]
   documents     WebsiteUserDocument[]
+  sellerProfile SellerProfile?
+  listings      SellerListing[]
 
   @@map("website_users")
+}
+
+// ─── Seller Profile ───
+
+model SellerProfile {
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String        @unique @db.ObjectId
+  user              WebsiteUser   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyName       String?
+  businessType      String?
+  businessLicense   String?
+  gstNumber         String?
+  
+  address           String?
+  city              String?
+  state             String?
+  pincode           String?
+  
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  
+  status            SellerStatus  @default(APPROVED)
+  approvedAt        DateTime?
+  rejectionReason   String?
+  
+  totalListings     Int           @default(0)
+  approvedListings  Int           @default(0)
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("seller_profiles")
+}
+
+// ─── Seller Listings ───
+
+model SellerListing {
+  id                String               @id @default(auto()) @map("_id") @db.ObjectId
+  sellerId          String               @db.ObjectId
+  seller            WebsiteUser          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  
+  title             String
+  description       String?
+  propertyType      PropertyType         @default(RESIDENTIAL)
+  transactionType   PropertyTransactionType @default(SALE)
+  
+  area              Float
+  areaUnit          String               @default("sq.ft")
+  bedrooms          Int                  @default(0)
+  bathrooms         Int                  @default(0)
+  
+  price             Float
+  pricePerUnit      Float?
+  
+  address           String
+  city              String?
+  state             String?
+  locality          String?
+  pincode           String?
+  coordinates       String?
+  
+  amenities         String[]             @default([])
+  images            String[]             @default([])
+  video             String?
+  
+  status            SellerListingStatus  @default(PENDING_APPROVAL)
+  approvedAt        DateTime?
+  rejectionReason   String?
+  
+  featured          Boolean              @default(false)
+  views             Int                  @default(0)
+  
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@map("seller_listings")
 }
 
 // ─── Auth tokens ───

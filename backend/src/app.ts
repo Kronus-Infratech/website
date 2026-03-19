@@ -19,6 +19,8 @@ import newsletterRoutes from "./modules/newsletter/routes.js";
 import uploadRoutes from "./modules/upload/routes.js";
 import adminRoutes from "./modules/admin/routes.js";
 import websiteProjectRoutes from "./modules/website-projects/routes.js";
+import sellersRoutes from "./modules/sellers/routes.js";
+import otpRoutes from "./modules/otp/routes.js";
 
 const app = express();
 
@@ -43,6 +45,7 @@ app.get("/api/health", (_req, res) => {
 
 // ─── API Routes ───
 app.use("/api/auth", authRoutes);
+app.use("/api/otp", otpRoutes);
 app.use("/api/leads", leadsRoutes);
 app.use("/api/properties", propertiesRoutes);
 app.use("/api/blogs", blogsRoutes);
@@ -51,6 +54,7 @@ app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/projects", websiteProjectRoutes);
+app.use("/api/sellers", sellersRoutes);
 
 // ─── 404 ───
 app.use((_req, res) => {

@@ -8,6 +8,7 @@ import {
   sendOtpSchema,
   verifyOtpSchema,
   registerEmailSchema,
+  registerSellerSchema,
   loginEmailSchema,
   googleAuthSchema,
   resetPasswordSchema,
@@ -21,6 +22,7 @@ router.post("/otp/verify-phone", authLimiter, validate({ body: verifyOtpSchema }
 
 // Email
 router.post("/register", authLimiter, validate({ body: registerEmailSchema }), asyncHandler(ctrl.register));
+router.post("/register/seller", authLimiter, validate({ body: registerSellerSchema }), asyncHandler(ctrl.registerSeller));
 router.post("/login/email", authLimiter, validate({ body: loginEmailSchema }), asyncHandler(ctrl.loginEmail));
 router.post("/verify-email", authLimiter, validate({ body: verifyOtpSchema }), asyncHandler(ctrl.verifyEmail));
 

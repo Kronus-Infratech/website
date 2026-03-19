@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -84,11 +84,10 @@ export default function Header() {
                     {/* CTA + Mobile */}
                     <div className="flex items-center gap-4">
                         <Link
-                            href="tel:+919876543210"
+                            href="/login"
                             className="hidden md:inline-flex items-center gap-2 rounded-lg bg-teal px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-teal/70"
                         >
-                            <Phone className="w-3.5 h-3.5" />
-                            Book a Visit
+                            Get Started
                         </Link>
                         <button
                             type="button"
