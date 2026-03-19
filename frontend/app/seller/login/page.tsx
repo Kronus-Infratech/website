@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { Suspense, useState, useEffect, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSellerAuth } from "@/lib/seller-auth";
 import Image from "next/image";
 import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export default function SellerLoginPage() {
+function SellerLoginContent() {
     const { login, user, loading: authLoading } = useSellerAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -237,5 +237,13 @@ export default function SellerLoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SellerLoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <SellerLoginContent />
+        </Suspense>
     );
 }
