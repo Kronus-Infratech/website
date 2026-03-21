@@ -36,7 +36,7 @@ export default function HeroSection() {
                     className="w-full h-full object-cover"
                     aria-hidden="true"
                 >
-                    <source src="/hero-video.mp4" type="video/mp4" />
+                    <source src="/new-hero.mp4" type="video/mp4" />
                 </video>
             </motion.div>
 
@@ -78,7 +78,7 @@ export default function HeroSection() {
                     neighbourhoods remember, and landmarks Sonipat takes pride in.
                 </motion.p>
 
-                <div className="mt-10 w-full">
+                <div className="mt-40 w-full">
                     <SearchBar />
                 </div>
             </motion.div>
